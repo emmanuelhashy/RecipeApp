@@ -1,4 +1,4 @@
-package com.recipeapp;
+package com.foo.recipeapp;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

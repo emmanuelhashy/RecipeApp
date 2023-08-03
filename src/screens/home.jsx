@@ -1,15 +1,16 @@
-import React, { useState, useCallback} from "react";
+import React, { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, StyleSheet, Text, FlatList, Button, ActivityIndicator } from "react-native";
 import getRecipes from "../data/recipe"
 import Card from '../components/card'
-import { useFocusEffect } from "@react-navigation/native";
-
+import { getAvailablePurchases } from "react-native-iap";
+import { constants } from "../utils/constants";
 
 const Home = ({ navigation }) => {
 
     const [recipes, setRecipes] = useState([]);
     const [isPremiumUser, setPremiumUser] = useState(false);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(true);
 
     useFocusEffect(
         useCallback(
@@ -23,6 +24,26 @@ const Home = ({ navigation }) => {
         )
 
     );
+
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true);
+            const getPurchase = async () => {
+                try {
+                    const result = await getAvailablePurchases();
+                    const hasPurchased = result.find((product) => product.productId === constants.productSkus[0]);
+                    setLoading(false);
+                    setPremiumUser(hasPurchased);
+                }
+                catch (error) {
+                    console.error('Error occurred while fetching purchases', error);
+                }
+            }
+    
+            getPurchase();
+    
+        }, [])
+    )
 
     const clickHandler = (id) => {
         navigation.navigate('Recipe-detail', {
